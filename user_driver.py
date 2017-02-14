@@ -90,22 +90,27 @@ def get_eventid_for_filename(evt):
                                                         img_id.fiducials())
     return id_for_filename
 
+
 def main():    
     sslearn = SSLearnPipeline(outputdir='/reg/d/psdm/amo/amo86815/scratch/davidsch',
                               output_prefix='amo86815',
-                              total_to_label=6,
-                              max_boxes_in_one_image=2)
+                              vgg16_weights='/reg/d/ana01/temp/davidsch/mlearn/vgg16/vgg16_weights.npz',
+                              max_boxes_in_one_image=2,
+                              total_to_label=7)
     dark_filename = '/reg/d/psdm/amo/amo86815/scratch/davidsch/dark_run68.npy'
     dark = get_dark(expname='amo86815', run_number=68, output_filename=dark_filename)
     
     ds = psana.DataSource('exp=amo86815:run=72:idx')
     detector = psana.Detector('xtcav')
     run = ds.runs().next()
-    event_times = list(run.times())
-    random.seed(394901)
-    random.shuffle(event_times)
-    while sslearn.labeling_not_done() and len(event_times):
-        tm = event_times.pop()
+    event_times = run.times()
+    np.random.seed(394901)
+    event_order = np.arange(len(event_times))
+    np.random.shuffle(event_order)
+    ii = 0
+    while sslearn.labeling_not_done() and ii < len(event_order):
+        tm = event_times[event_order[ii]]
+        ii += 1
         evt = run.event(tm)
         orig_img = detector.raw(evt)
         if orig_img is None:
@@ -115,6 +120,32 @@ def main():
             continue
         sslearn.label(prep_img, get_eventid_for_filename(evt))
 
+    sslearn.build_models()
+
+    for ii, tm in enumerate(event_times[0:100]):       
+        evt = run.event(tm)
+        orig_img = detector.raw(evt)
+        if orig_img is None:
+            continue
+        prep_img = prepare_image(orig_img, dark)
+        if prep_img is None:
+            continue
+        prediction = sslearn.predict(prep_img)
+        if prediction['failed']:
+            print("event %5d: prediction failed" % ii)
+            continue
+        print("event %5d: category=%d confidence=%.2f" % (ii, 
+                                                          prediction['category'],
+                                                          prediction['category_confidence']))
+        for box in range(2):
+            if prediction['boxes'][box]:
+                boxdict = prediction['boxes'][box]
+                print("    box %2d: confidence=%.2f xmin=%.1f xmax=%.1f  ymin=%.1f ymax=%.1f" % 
+                      (box, boxdict['confidence'],
+                       boxdict['xmin'], boxdict['xmax'], boxdict['ymin'], boxdict['ymax']))
+
+        
+    
 
 if __name__ == '__main__':
     main()
