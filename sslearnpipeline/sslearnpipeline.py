@@ -59,12 +59,11 @@ class SSLearnPipeline(object):
     return True
 
   def make_labelme_command_line(self, input_jpeg_fname, output_label_fname):
-    from . import labelme
-    from .labelme import app as labelme_app
+    import labelme
+    import labelme.app as labelme_app
     cmd = 'python %s' % labelme_app.__file__
     cmd += ' --output %s' % output_label_fname
     cmd += ' %s' % input_jpeg_fname
-    print(cmd)
     return cmd
 
   def validate_label_file(self, label_file):
@@ -122,6 +121,7 @@ class SSLearnPipeline(object):
     util.create_jpeg(img, output_jpeg_fname)
     labelme_command_line = self.make_labelme_command_line(input_jpeg_fname=output_jpeg_fname,
                                                           output_label_fname=output_label_fname)
+    print("about to execute:\n  %s" % labelme_command_line)
     assert 0 == os.system(labelme_command_line)
     assert os.path.exists(output_label_fname)
     
