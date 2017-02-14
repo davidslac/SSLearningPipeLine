@@ -93,7 +93,7 @@ def get_eventid_for_filename(evt):
 def main():    
     sslearn = SSLearnPipeline(outputdir='/reg/d/psdm/amo/amo86815/scratch/davidsch',
                               output_prefix='amo86815',
-                              total_to_label=5,
+                              total_to_label=6,
                               max_boxes_in_one_image=2)
     dark_filename = '/reg/d/psdm/amo/amo86815/scratch/davidsch/dark_run68.npy'
     dark = get_dark(expname='amo86815', run_number=68, output_filename=dark_filename)
