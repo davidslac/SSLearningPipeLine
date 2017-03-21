@@ -16,11 +16,11 @@ mkdir work
 cd work
 ```
 
-source conda_setup
+source /reg/g/psdm/bin/conda_setup
 on pslogin (outside internet machine, get both these repos):
 
 ```
-git clone https://github.com/davidslac/SSLearningPipeLine.git
+git clone https://github.com/mmongia/SSLearningPipeLine.git
 git clone https://github.com/davidslac/pylabelme.git
 ```
 
@@ -28,7 +28,7 @@ now in another terminal,
 
 ```
 ssh psana
-source conda_setup
+source /reg/g/psdm/bin/conda_setup
 cd work/SSLearningPipeline
 
 PYTHONPATH=../pylabelme:$PYTHONPATH python user_driver.py
