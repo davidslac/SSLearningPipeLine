@@ -1,6 +1,16 @@
 # SSLearningPipeLine
 
-intro
+This project is a semi supervised pipeline for locating objects in images. Presently the pipeline is transfer learning to find a fixed set of boxes in an image.
+
+for a fixed set of makes use of transfer learning. A small set of images will
+
+Users are expected to write a script that prepares images to label.
+This script imports this package to 
+
+  1. run the labeling tool
+  2. managing the labels
+  3. produce 
+ 
 
 # Operations
 
@@ -30,6 +40,7 @@ now in another terminal,
 ssh psana
 source /reg/g/psdm/bin/conda_setup
 cd work/SSLearningPipeline
+pyqtcrc command for resources
 
 PYTHONPATH=../pylabelme:$PYTHONPATH python user_driver.py
 ```
